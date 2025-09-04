@@ -1,0 +1,112 @@
+---
+title: "Homework2"
+author: "Jacob A. Fericy"
+format: html
+editor: visual
+---
+
+## Task 1: Basic Vector Practice
+
+In this section, we store vectors relative to measurements in blood pressure from pre- and post-treatment readings.
+
+```{r}
+
+#creating vectors for pre and post treatment readings.
+pre_bp <- c(120, 151, 125, 126, 115, 132, 132, 129, 134, 139, 127, 122, 127, 135, 133, 128, 147, 138, 140, 132)
+
+post_bp <- c(127, 145, 135, 122, 115, 122, 123, 126, 126, 129, 132, 146, 120, 114, 121, 120, 128, 120, 133, 115)
+
+
+#create a name function type object to apply to vectors
+name_function <- paste("Subject", 1:20, sep = "_")
+names(pre_bp)  <- name_function
+names(post_bp) <- name_function
+
+#calculating change
+diff_bp <- pre_bp - post_bp
+
+#calculating the average decrease
+avg_decrease_all <- mean(diff_bp)
+
+#finding out
+decrease_index   <- which(diff_bp > 0)
+decreased_names <- names(diff_bp)[decrease_index]
+
+print("The subject with decreased blood pressure after treatment are: ")
+print(decreased_names)
+
+#subset of vector conditional on values being greater than 0
+diff_pos_only <- diff_bp[diff_bp > 0]
+
+#Calculating the average decrease in blood pressure for those where the blood pressure decreased
+avg_decrease_pos <- mean(diff_pos_only)
+
+```
+
+## Task 2: Basic DataFrame Practice
+
+In this section, we will utilize the objects we created in Task 1 and append them to a dataframe to test the various ways we can work with dataframes in R.
+
+```{r}
+library(knitr)
+library(kableExtra)
+#creating the dataframe with the variables from Task 1. 
+dataframe_bp <- data.frame(
+  patient = name_function,
+  pre_bp  = pre_bp,
+  post_bp = post_bp,
+  diff_bp = diff_bp
+)
+
+#Return the BP dataframe where the diff_bp column is negative
+dataframe_bp_neg_diff <- dataframe_bp[dataframe_bp$diff_bp < 0, ]
+
+#creating new column
+dataframe_bp$post_below_120 <- dataframe_bp$post_bp < 120
+
+#I was having issues with knitr:kable so used kable styling.
+dataframe_bp %>%
+  kable("html") %>%
+  kable_styling(full_width = FALSE)
+```
+
+## Task 3: Basic List Practice
+
+In this section, we have the dataframes and are using lists to learn more about handling data.
+
+```{r}
+#Creating new vectors relative to placebo values.
+placebo_pre  <- c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130)
+
+placebo_post <- c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124)
+
+#applying the naming function for revised vector count.
+name_function_placebo <- paste("Subject", 1:10, sep = "_")
+
+
+#creating a new dataframe similar to before
+dataframe_placebo <- data.frame(
+  patient = name_function_placebo,
+  pre_bp  = placebo_pre,
+  post_bp = placebo_post,
+  diff_bp = placebo_pre - placebo_post
+)
+
+#Adding TRUE/FALSE values as before
+dataframe_placebo$post_below_120 <- dataframe_placebo$post_bp < 120
+
+
+#create a list of dataframes
+bp_list <- list(
+  treatment = dataframe_bp,
+  placebo   = dataframe_placebo
+)
+
+#index the first element in various ways
+value1 <- bp_list[[1]]
+value2 <- bp_list$treatment
+value3 <- bp_list[["treatment"]]
+
+#using one-line (comment not included :) )
+placebo_col <- bp_list[["placebo"]][["pre_bp"]]
+```
